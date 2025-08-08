@@ -22,7 +22,12 @@ const registerController = async (req, res) => {
 
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
-  res.cookie("token", token);
+  res.cookie('token', token, {
+  httpOnly: true,
+  secure: true,          // ✅ now true, because you're using HTTPS
+  sameSite: 'none',      // ✅ if your frontend and backend are on different domains
+  maxAge: 24 * 60 * 60 * 1000
+});
 
   res.status(201).json({
     message: "user created successfully",
@@ -50,7 +55,12 @@ const loginController = async (req, res) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
   // res.cookie("token", token);
-  res.cookie("token", token, );
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: true, // ✅ now true, because you're using HTTPS
+    sameSite: "none", // ✅ if your frontend and backend are on different domains
+    maxAge: 24 * 60 * 60 * 1000,
+  });
 
   res.status(200).json({
     message: "user logged in successffully",
@@ -76,8 +86,7 @@ const profileController = (req, res) => {
 const deleteController = async (req, res) => {
   const user = res.user;
   const deletedUser = await userModel.findOneAndDelete({ _id: user._id });
-  res.clearCookie("token")
-  
+  res.clearCookie("token");
 
   res.json({
     message: "User deleted successfully",
@@ -98,5 +107,5 @@ module.exports = {
   profileController,
   logoutController,
   usersController,
-  deleteController
+  deleteController,
 };
