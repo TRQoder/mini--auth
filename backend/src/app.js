@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173", // your frontend URL
+    origin: "https://trqoder-auth.netlify.app", // your frontend URL
     credentials: true,
   })
 );
