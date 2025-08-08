@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import toast from 'react-hot-toast';
+import axios from '../../api/axiosConfig';
+
 
 const LoginForm = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: "", password: ""
+    username: "", password: ""
   });
+
   const [showPassword, setShowPassword] = useState(false);
 
   function changeHandler(event) {
@@ -17,12 +20,17 @@ const LoginForm = ({ setIsLoggedIn }) => {
     }));
   }
 
-  function submitHandler(event) {
+  async function submitHandler(event) {
     event.preventDefault();
-    setIsLoggedIn(true);
-    toast.success("Logged In");
-    navigate("/dashboard");
-    console.log(formData)
+    try {
+      const user = await axios.post("/login", formData)
+      setIsLoggedIn(true);
+      toast.success(user.data.message);
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error("Unable to login")
+    }
+
   }
 
   return (
@@ -32,14 +40,14 @@ const LoginForm = ({ setIsLoggedIn }) => {
         <form onSubmit={submitHandler} className="space-y-6">
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
             <input
               required
-              type="email"
-              placeholder="Enter email"
-              value={formData.email}
+              type="text"
+              placeholder="Enter username"
+              value={formData.username}
               onChange={changeHandler}
-              name="email"
+              name="username"
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>

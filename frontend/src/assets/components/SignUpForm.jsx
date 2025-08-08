@@ -20,7 +20,7 @@ const SignUpForm = ({ setIsLoggedIn }) => {
     }));
   }
 
- async function submitHandler(event) {
+  async function submitHandler(event) {
     event.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
@@ -28,13 +28,14 @@ const SignUpForm = ({ setIsLoggedIn }) => {
     }
 
     try {
-      const user =await axios.post("/register",{name:formData.name,email:formData.email,password:formData.password})
+      const sendData = { username: formData.name, email: formData.email, password: formData.password }
+      const user = await axios.post("/register", sendData)
       console.log(user);
       setIsLoggedIn(true);
       toast.success("Account created");
       navigate("/dashboard");
     } catch (error) {
-
+      toast.error("error")
     }
 
   }
@@ -51,7 +52,7 @@ const SignUpForm = ({ setIsLoggedIn }) => {
               <input
                 required
                 type="text"
-                name="firstName"
+                name="name"
                 onChange={changeHandler}
                 value={formData.firstName}
                 placeholder="Name"

@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const registerController = async (req, res) => {
-  const { username,email, password } = req.body;
+  const { username, email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const userAlreadyExist = await userModel.findOne({ username });
@@ -49,7 +49,8 @@ const loginController = async (req, res) => {
 
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
-  res.cookie("token", token);
+  // res.cookie("token", token);
+  res.cookie("token", token, );
 
   res.status(200).json({
     message: "user logged in successffully",
@@ -72,6 +73,17 @@ const profileController = (req, res) => {
   });
 };
 
+const deleteController = async (req, res) => {
+  const user = res.user;
+  const deletedUser = await userModel.findOneAndDelete({ _id: user._id });
+  res.clearCookie("token")
+  
+
+  res.json({
+    message: "User deleted successfully",
+    deletedUser,
+  });
+};
 const usersController = async (req, res) => {
   const users = await userModel.find();
   res.status(200).json({
@@ -80,12 +92,11 @@ const usersController = async (req, res) => {
   });
 };
 
-
-
 module.exports = {
   registerController,
   loginController,
   profileController,
   logoutController,
   usersController,
+  deleteController
 };

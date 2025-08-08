@@ -1,14 +1,33 @@
 import React from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
-
+import axios from '../../api/axiosConfig';
+import { useEffect } from 'react';
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate()
-  const logoutHandler = () => {
-    setIsLoggedIn(false);
-    toast.success("Logged Out");
-    navigate("/login")
+  const checkLogin = async () => {
+    try {
+      const user = await axios.get("/profile")
+      if (user) {
+        setIsLoggedIn(true)
+      }
+    } catch (error) {
+      toast.error("fetching failed")
+    }
+  }
+  useEffect(() => {
+    checkLogin()
+  }, [])
+  const logoutHandler = async () => {
+    try {
+      await axios.get("/logout")
+      setIsLoggedIn(false);
+      toast.success("Logged Out");
+      navigate("/login")
+    } catch (error) {
+      toast.error("failed")
+    }
   }
   return (
     <div className="w-full h-16 bg-slate-800 text-amber-200 flex items-center justify-between px-6 shadow-xl">
@@ -18,9 +37,9 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
           <li>
             <Link to="/" className="hover:text-white transition duration-200">Home</Link>
           </li>
-          <li>
-            <Link to="/" className="hover:text-white transition duration-200">About</Link>
-          </li>
+          {isLoggedIn && <li>
+            <Link to="/alluser" className="hover:text-white transition duration-200">All users</Link>
+          </li>}
           <li>
             <Link to="/" className="hover:text-white transition duration-200">Contact</Link>
           </li>
@@ -54,12 +73,12 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               Log Out
             </button>
 
-           
-              <button className="px-4 py-1 bg-yellow-500 text-black rounded hover:bg-yellow-600 transition duration-200"
-              onClick={()=>{navigate("/dashboard")}}>
-                Dashboard
-              </button>
-           
+
+            <button className="px-4 py-1 bg-yellow-500 text-black rounded hover:bg-yellow-600 transition duration-200"
+              onClick={() => { navigate("/dashboard") }}>
+              Dashboard
+            </button>
+
           </>
         )}
       </div>
