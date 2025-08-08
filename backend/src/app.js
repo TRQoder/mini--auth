@@ -14,5 +14,9 @@ app.use(
 );
 
 app.use("/api/auth", authRoutes);
+app.get("/ping", (req, res) => {
+  res.send("pong");
+});
+
 
 module.exports = app;
